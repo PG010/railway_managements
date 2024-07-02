@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="seat-availability-container">
+    <h1>Check Seat Availability</h1>
+    <form action="{% url 'get_seat_availability' %}" method="post">
+        {% csrf_token %}
+        <label for="source">Source:</label>
+        <input type="text" id="source" name="source"><br><br>
+        <label for="destination">Destination:</label>
+        <input type="text" id="destination" name="destination"><br><br>
+        <input type="submit" value="Search">
+    </form>
+    {% if trains %}
+        <h2>Trains Available:</h2>
+        <ul>
+            {% for train in trains %}
+                <li>{{ train }} - Seats available: {{ train.total_seats|default_if_none:0 }} (Total Seats) - {{ train.booking_set.count }} (Booked Seats)</li>
+                <form action="{% url 'book_seat' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="train_id" value="{{ train.id }}">
+                    <input type="submit" value="Book">
+                </form>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div> 
+{% endblock %}
+
